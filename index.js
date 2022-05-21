@@ -17,3 +17,19 @@ app.listen(port, () => {
 })
 
 
+// Connect with DB
+
+const uri = `mongodb+srv://${process.env.DB_ADMIN}:${process.env.DB_PASS}@cluster0.cui7v.mongodb.net/?retryWrites=true&w=majority`;
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
+async function run() {
+    try {
+        await client.connect();
+        console.log("DB Connected");
+
+    }
+    finally {
+
+    }
+}
+run().catch(console.dir);
