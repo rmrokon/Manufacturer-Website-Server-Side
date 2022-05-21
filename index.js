@@ -25,7 +25,15 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         await client.connect();
-        console.log("DB Connected");
+
+        const productsCollection = client.db("smart-drilling").collection("allproducts");
+
+        // Get all products
+
+        app.get("/allproducts", async (req, res) => {
+            const result = await productsCollection.find().toArray();
+            res.send(result);
+        })
 
     }
     finally {
