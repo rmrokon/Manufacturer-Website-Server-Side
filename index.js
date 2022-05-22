@@ -45,6 +45,16 @@ async function run() {
             res.send(result);
         })
 
+        // Get Products by ID
+
+        app.get("/product/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const product = await productsCollection.findOne(query);
+
+            res.send(product);
+        })
+
         // Get all reviews
 
         app.get("/reviews", async (req, res) => {
