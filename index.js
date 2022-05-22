@@ -8,6 +8,15 @@ const app = express();
 
 const port = process.env.PORT || 5000;
 
+// middleware
+const corsConfig = {
+    origin: true,
+    credentials: true,
+}
+app.use(cors(corsConfig));
+app.options('*', cors(corsConfig));
+app.use(express.json());
+
 app.get('/', (req, res) => {
     res.send("Smart Drilling server is running")
 })
@@ -27,11 +36,19 @@ async function run() {
         await client.connect();
 
         const productsCollection = client.db("smart-drilling").collection("allproducts");
+        const reviewsCollection = client.db("smart-drilling").collection("reviews");
 
         // Get all products
 
         app.get("/allproducts", async (req, res) => {
             const result = await productsCollection.find().toArray();
+            res.send(result);
+        })
+
+        // Get all reviews
+
+        app.get("/reviews", async (req, res) => {
+            const result = await reviewsCollection.find().toArray();
             res.send(result);
         })
 
