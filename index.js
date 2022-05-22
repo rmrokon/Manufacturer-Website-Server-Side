@@ -93,6 +93,22 @@ async function run() {
             res.send(product);
         })
 
+        // Update product quantity
+
+        app.patch("/updateQuantity", async (req, res) => {
+            const { newQuantity, _id } = req.body;
+            const filter = { _id: ObjectId(_id) }
+            const updateDoc = {
+                $set: { quantity: newQuantity },
+            };
+
+            const result = await productsCollection.updateOne(filter, updateDoc);
+
+            res.send(result);
+        })
+
+
+
         // Get all orders
 
 
@@ -103,6 +119,18 @@ async function run() {
             const order = req.body;
             const result = await orderCollection.insertOne(order);
             res.send(result)
+        })
+
+        // Delete an Order
+
+        app.delete("/delete/:id", verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await orderCollection.deleteOne(filter);
+            if (result.deletedCount === 1) {
+                console.log(result);
+                res.send(result);
+            }
         })
 
 
