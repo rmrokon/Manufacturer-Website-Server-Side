@@ -3,6 +3,7 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
+const stripe = require('stripe')(process.env.CLIENT_SECRET);
 
 const app = express();
 
@@ -54,6 +55,40 @@ async function run() {
         const reviewsCollection = client.db("smart-drilling").collection("reviews");
         const userCollection = client.db("smart-drilling").collection("users");
         const orderCollection = client.db("smart-drilling").collection("order");
+        const paymentsCollection = client.db("smart-drilling").collection("payments");
+
+
+        // Payment
+
+        app.post('/create-payment-intent', verifyJWT, async (req, res) => {
+            const { bill } = req.body;
+            const amount = bill * 100;
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: amount,
+                currency: "usd",
+                payment_method_types: ['card']
+            });
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
+        })
+
+        // Update Payments Collection
+        app.patch("/updatePayment/:id", verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const payment = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    paid: true,
+                    transactionId: payment.transactionId
+                },
+            };
+            const result = await paymentsCollection.insertOne(payment);
+            const order = await orderCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        })
 
         // User Creation
         app.put("/users/:email", async (req, res) => {
@@ -85,11 +120,17 @@ async function run() {
 
         app.get("/product/:id", async (req, res) => {
             const id = req.params.id;
-            console.log(id);
             const query = { _id: ObjectId(id) };
             const product = await productsCollection.findOne(query);
-            console.log(product);
 
+            res.send(product);
+        })
+
+        // Get a product by Name
+        app.get("/productByName/:name", async (req, res) => {
+            const name = req.params.name;
+            const filter = { name };
+            const product = await productsCollection.findOne(filter);
             res.send(product);
         })
 
@@ -128,7 +169,7 @@ async function run() {
             const filter = { _id: ObjectId(id) };
             const result = await orderCollection.deleteOne(filter);
             if (result.deletedCount === 1) {
-                console.log(result);
+
                 res.send(result);
             }
         })
@@ -141,6 +182,14 @@ async function run() {
             const filter = { email: email }
             const ordersByEmail = await orderCollection.find(filter).toArray();
             res.send(ordersByEmail)
+        })
+        // Get orders by id
+
+        app.get("/orderById/:id", verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const orderById = await orderCollection.findOne(filter);
+            res.send(orderById);
         })
 
         // Get all reviews
