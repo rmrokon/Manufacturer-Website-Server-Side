@@ -109,6 +109,33 @@ async function run() {
             res.send({ result, token });
         })
 
+        // Get User By Email
+
+        app.get("/getUserByEmail/:email", verifyJWT, async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const user = await userCollection.findOne(filter);
+            res.send(user);
+        })
+        // Update a User
+
+        app.put("/updateAUser/:id", verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const { education, linkedin, city, phone } = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updatedUser = {
+                $set: {
+                    education,
+                    linkedin,
+                    city,
+                    phone
+                }
+            }
+            const result = await userCollection.updateOne(filter, updatedUser, options);
+            res.send(result);
+        })
+
         // Get all products
 
         app.get("/allproducts", async (req, res) => {
@@ -196,6 +223,13 @@ async function run() {
 
         app.get("/reviews", async (req, res) => {
             const result = await reviewsCollection.find().toArray();
+            res.send(result);
+        })
+        // Add a review
+
+        app.post("/addAReview", verifyJWT, async (req, res) => {
+            const clientReview = req.body;
+            const result = await reviewsCollection.insertOne(clientReview);
             res.send(result);
         })
 
