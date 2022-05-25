@@ -57,6 +57,31 @@ async function run() {
         const orderCollection = client.db("smart-drilling").collection("order");
         const paymentsCollection = client.db("smart-drilling").collection("payments");
 
+        // Verify Admin
+
+        async function verifyAdmin(req, res, next) {
+            const requesterEmail = req.decoded.email;
+            const filter = { email: requesterEmail };
+            const requester = await userCollection.findOne(filter);
+
+            if (requester.role === 'Admin') {
+                next();
+            }
+            else {
+                res.status(403).send({ message: "Forbidden Access" })
+            }
+        }
+
+        // API for useAdmin hook
+
+        app.get("/admin/:email", async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const user = await userCollection.findOne(filter);
+            const isAdmin = user?.role === "Admin";
+            res.send({ admin: isAdmin });
+        })
+
 
         // Payment
 
@@ -109,6 +134,13 @@ async function run() {
             res.send({ result, token });
         })
 
+        // Get all user 
+
+        app.get("/allusers", verifyJWT, async (req, res) => {
+            const result = await userCollection.find().toArray();
+            res.send(result);
+        })
+
         // Get User By Email
 
         app.get("/getUserByEmail/:email", verifyJWT, async (req, res) => {
@@ -121,11 +153,12 @@ async function run() {
 
         app.put("/updateAUser/:id", verifyJWT, async (req, res) => {
             const id = req.params.id;
-            const { education, linkedin, city, phone } = req.body;
+            const { education, linkedin, city, phone, name } = req.body;
             const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
             const updatedUser = {
                 $set: {
+                    name,
                     education,
                     linkedin,
                     city,
@@ -133,6 +166,29 @@ async function run() {
                 }
             }
             const result = await userCollection.updateOne(filter, updatedUser, options);
+            res.send(result);
+        })
+
+        // Delete an User
+
+        app.delete("/user/delete/:email", verifyJWT, verifyAdmin, async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const result = await userCollection.deleteOne(filter);
+            res.send(result);
+        })
+
+        // Make a user Admin
+
+        app.put("/user/admin/:email", verifyJWT, verifyAdmin, async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const updatedUser = {
+                $set: {
+                    role: "Admin"
+                }
+            }
+            const result = await userCollection.updateOne(filter, updatedUser);
             res.send(result);
         })
 
