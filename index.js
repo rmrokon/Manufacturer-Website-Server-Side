@@ -231,6 +231,14 @@ async function run() {
             res.send(result);
         })
 
+        // Add a product
+
+        app.post("/addProduct", verifyJWT, verifyAdmin, async (req, res) => {
+            const product = req.body;
+            const result = await productsCollection.insertOne(product);
+            res.send(result);
+        })
+
 
 
         // Get all orders
