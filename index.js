@@ -195,7 +195,7 @@ async function run() {
         // Get all products
 
         app.get("/allproducts", async (req, res) => {
-            const result = await productsCollection.find().toArray();
+            const result = await (await productsCollection.find().toArray()).reverse();
             res.send(result);
         })
 
@@ -284,7 +284,7 @@ async function run() {
         // Get all reviews
 
         app.get("/reviews", async (req, res) => {
-            const result = await reviewsCollection.find().toArray();
+            const result = await reviewsCollection.find().toArray().reverse();
             res.send(result);
         })
         // Add a review
