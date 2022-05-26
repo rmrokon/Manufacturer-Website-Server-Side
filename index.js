@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { options } = require('nodemon/lib/config');
 require('dotenv').config();
 const stripe = require('stripe')(process.env.CLIENT_SECRET);
 
@@ -240,7 +241,22 @@ async function run() {
         })
 
         // Get all orders
+        app.get("/orders", verifyJWT, verifyAdmin, async (req, res) => {
+            const orders = await orderCollection.find({}).toArray();
+            res.send(orders);
+        })
 
+        // Ship an Order 
+
+        app.put("/order/shipped/:id", verifyJWT, verifyAdmin, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: { shipped: true }
+            }
+            const result = await orderCollection.updateOne(query, updateDoc);
+            res.send(result);
+        })
 
 
         // Place an order
