@@ -116,6 +116,13 @@ async function run() {
             res.send(result);
         })
 
+        // 
+        app.delete("/product/delete/:id", verifyJWT, verifyAdmin, async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await productsCollection.deleteOne(filter);
+            res.send(result);
+        })
         // User Creation
         app.put("/users/:email", async (req, res) => {
             const email = req.params.email;
@@ -196,7 +203,7 @@ async function run() {
         // Get all products
 
         app.get("/allproducts", async (req, res) => {
-            const result = await (await productsCollection.find().toArray()).reverse();
+            const result = (await productsCollection.find().toArray()).reverse();
             res.send(result);
         })
 
