@@ -284,7 +284,7 @@ async function run() {
         // Get all reviews
 
         app.get("/reviews", async (req, res) => {
-            const result = await reviewsCollection.find().toArray().reverse();
+            const result = await reviewsCollection.find().toArray();
             res.send(result);
         })
 
