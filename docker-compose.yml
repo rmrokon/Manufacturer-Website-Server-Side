@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: manufac-backend
+    environment:
+      - PROTOCOL=http
+      - HOST=localhost
+      - PORT=8000
+      - NODE_ENV="dev"
+      - JWT_SECRET="my-super-secret"
+      - CLIENT_SECRET="this-is-client-secret"
+      # - MANUFAC_DATABASE=mongodb://mongo:27017/manufacturer_website
+      - MONGO_URL=mongodb://mongo:27017/manufacturer_website
+    ports:
+      - 8082:8000
+    volumes:
+      - ./api/src:/app/src
+      - ./api/uploads:/app/uploads
+    depends_on:
+      mongo:
+        condition: service_started
+    restart: on-failure
+    networks:
+      - manufac
+    stdin_open: true
+      
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo:/data/db
+    restart: always
+    networks:
+      - manufac
+
+  
+
+volumes:
+  mongo:
+    driver: local
+  db_data:
+  fa_config:
+  search_data:
+  my-bnb-dbs-1:
+
+networks:
+  manufac:
+    driver: bridge
