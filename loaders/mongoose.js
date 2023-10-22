@@ -1,8 +1,8 @@
-const mongoose = require("./mongoose");
+const mongoose = require("mongoose");
 
 const {MONGO_URL} = process.env;
 async function connectDatabase(uri){
-    const dbConnection = mongoose.connect(uri || MONGO_URL);
+    const dbConnection = await mongoose.connect(uri || MONGO_URL);
     return dbConnection;
 }
 
