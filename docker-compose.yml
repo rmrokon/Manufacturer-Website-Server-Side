@@ -15,7 +15,7 @@ services:
       - CLIENT_SECRET="this-is-client-secret"
       - MONGO_URL=mongodb://mongo:27017/manufacturer_website
     ports:
-      - 8082:8000
+      - 8000:8000
     volumes:
       - ./:/app/src
     depends_on:

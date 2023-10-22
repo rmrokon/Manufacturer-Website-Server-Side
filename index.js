@@ -1,10 +1,7 @@
 const express = require('express');
-const cors = require('cors');
 const jwt = require('jsonwebtoken');
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const { options } = require('nodemon/lib/config');
+// const { options } = require('nodemon/lib/config');
 const loaders = require('./loaders');
-// const { loaders } = require('./loaders');
 require('dotenv').config();
 
 const {
@@ -30,28 +27,7 @@ if(
         `PORT, MONGO_URL, JWT_SECRET, CLIENT_SECRET these env must be set`
       ); 
 }
-const stripe = require('stripe')(CLIENT_SECRET);
-
-const app = express();
-
-const port = PORT || 5000;
-
-// middleware
-const corsConfig = {
-    origin: true,
-    credentials: true,
-}
-app.use(cors(corsConfig));
-app.options('*', cors(corsConfig));
-app.use(express.json());
-
-app.get('/', (req, res) => {
-    res.send("Smart Drilling server is running")
-})
-
-app.listen(port, () => {
-    console.log("Smart Drilling Server on PORT: ", port);
-})
+// const stripe = require('stripe')(CLIENT_SECRET);
 
 // Verify JWT 
 const verifyJWT = (req, res, next) => {
@@ -70,7 +46,7 @@ const verifyJWT = (req, res, next) => {
 }
 
 // Connect with DB
-loaders.load({mongo_uri: MONGO_URL})
+loaders.load({mongo_uri: MONGO_URL, port: PORT})
 .then(()=>{
     console.log(`🚀 The server is running on ${PROTOCOL}://${HOST}:${PORT} on ${NODE_ENV} mode.`)
 })
