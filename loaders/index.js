@@ -1,4 +1,4 @@
-const { default: connectDatabase } = require("./mongoose");
+const { connectDatabase } = require("./mongoose");
 
 module.exports = (function Loaders(){
     return {
