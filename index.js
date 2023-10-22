@@ -3,12 +3,32 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const { options } = require('nodemon/lib/config');
+const loaders = require('./loaders');
+// const { loaders } = require('./loaders');
 require('dotenv').config();
-const stripe = require('stripe')(process.env.CLIENT_SECRET);
+
+const {
+    CLIENT_SECRET,
+    PORT,
+    JWT_SECRET,
+    MONGO_URL,
+} = process.env;
+
+if(
+    !CLIENT_SECRET ||
+    !PORT ||
+    !JWT_SECRET ||
+    !MONGO_URL
+){
+    throw new Error(
+        `PORT, MONGO_URL, JWT_SECRET, CLIENT_SECRET these env must be set`
+      ); 
+}
+const stripe = require('stripe')(CLIENT_SECRET);
 
 const app = express();
 
-const port = process.env.PORT || 5000;
+const port = PORT || 5000;
 
 // middleware
 const corsConfig = {
@@ -34,7 +54,7 @@ const verifyJWT = (req, res, next) => {
     if (!authHeader) {
         res.status(401).send({ message: "Unauthorized access" });
     }
-    jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
         if (err) {
             return res.status(403).send({ message: "Forbidden Access" });
         }
@@ -44,9 +64,13 @@ const verifyJWT = (req, res, next) => {
 }
 
 // Connect with DB
+loaders.load({mongo_uri: MONGO_URL})
+.then(()=>{
+    console.log(`🚀 The server is running on ${PROTOCOL}://${HOST}:${PORT} on ${NODE_ENV} mode.`)
+})
 
-const uri = `mongodb+srv://${process.env.DB_ADMIN}:${process.env.DB_PASS}@cluster0.cui7v.mongodb.net/?retryWrites=true&w=majority`;
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+// const uri = `mongodb+srv://${process.env.DB_ADMIN}:${process.env.DB_PASS}@cluster0.cui7v.mongodb.net/?retryWrites=true&w=majority`;
+// const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 async function run() {
     try {
@@ -135,7 +159,7 @@ async function run() {
             };
 
             const result = await userCollection.updateOne(filter, updateDoc, options);
-            const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN, {
+            const token = jwt.sign({ email: email }, JWT_SECRET, {
                 expiresIn: '30d'
             });
 
