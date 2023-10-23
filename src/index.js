@@ -1,55 +1,49 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
+const express = require("express");
+const jwt = require("jsonwebtoken");
 // const { options } = require('nodemon/lib/config');
-const loaders = require('./loaders');
-require('dotenv').config();
+const loaders = require("./loaders");
+require("dotenv").config();
 
-const {
-    CLIENT_SECRET,
-    PORT,
-    JWT_SECRET,
-    MONGO_URL,
-    PROTOCOL,
-    HOST,
-    NODE_ENV
-} = process.env;
+const { CLIENT_SECRET, PORT, JWT_SECRET, MONGO_URL, PROTOCOL, HOST, NODE_ENV } =
+  process.env;
 
-if(
-    !CLIENT_SECRET ||
-    !PORT ||
-    !JWT_SECRET ||
-    !MONGO_URL ||
-    !PROTOCOL ||
-    !HOST || 
-    !NODE_ENV
-){
-    throw new Error(
-        `PORT, MONGO_URL, JWT_SECRET, CLIENT_SECRET these env must be set`
-      ); 
+if (
+  !CLIENT_SECRET ||
+  !PORT ||
+  !JWT_SECRET ||
+  !MONGO_URL ||
+  !PROTOCOL ||
+  !HOST ||
+  !NODE_ENV
+) {
+  throw new Error(
+    `PORT, MONGO_URL, JWT_SECRET, CLIENT_SECRET these env must be set`
+  );
 }
 // const stripe = require('stripe')(CLIENT_SECRET);
 
-// Verify JWT 
+// Verify JWT
 const verifyJWT = (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    const token = authHeader.split(' ')[1];
-    if (!authHeader) {
-        res.status(401).send({ message: "Unauthorized access" });
+  const authHeader = req.headers.authorization;
+  const token = authHeader.split(" ")[1];
+  if (!authHeader) {
+    res.status(401).send({ message: "Unauthorized access" });
+  }
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(403).send({ message: "Forbidden Access" });
     }
-    jwt.verify(token, JWT_SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(403).send({ message: "Forbidden Access" });
-        }
-        req.decoded = decoded;
-        next();
-    })
-}
+    req.decoded = decoded;
+    next();
+  });
+};
 
 // Connect with DB
-loaders.load({mongo_uri: MONGO_URL, port: PORT})
-.then(()=>{
-    console.log(`🚀 The server is running on ${PROTOCOL}://${HOST}:${PORT} on ${NODE_ENV} mode.`)
-})
+loaders.load({ mongo_uri: MONGO_URL, port: PORT }).then(() => {
+  console.log(
+    `🚀 The server is running on ${PROTOCOL}://${HOST}:${PORT} on ${NODE_ENV} mode.`
+  );
+});
 
 // const uri = `mongodb+srv://${process.env.DB_ADMIN}:${process.env.DB_PASS}@cluster0.cui7v.mongodb.net/?retryWrites=true&w=majority`;
 // const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -89,7 +83,6 @@ loaders.load({mongo_uri: MONGO_URL, port: PORT})
 //             res.send({ admin: isAdmin });
 //         })
 
-
 //         // Payment
 
 //         app.post('/create-payment-intent', verifyJWT, async (req, res) => {
@@ -122,7 +115,7 @@ loaders.load({mongo_uri: MONGO_URL, port: PORT})
 //             res.send(result);
 //         })
 
-//         // 
+//         //
 //         app.delete("/product/delete/:id", verifyJWT, verifyAdmin, async (req, res) => {
 //             const id = req.params.id;
 //             const filter = { _id: ObjectId(id) };
@@ -148,7 +141,7 @@ loaders.load({mongo_uri: MONGO_URL, port: PORT})
 //             res.send({ result, token });
 //         })
 
-//         // Get all user 
+//         // Get all user
 
 //         app.get("/allusers", verifyJWT, async (req, res) => {
 //             const result = await userCollection.find().toArray();
@@ -259,7 +252,7 @@ loaders.load({mongo_uri: MONGO_URL, port: PORT})
 //             res.send(orders);
 //         })
 
-//         // Ship an Order 
+//         // Ship an Order
 
 //         app.put("/order/shipped/:id", verifyJWT, verifyAdmin, async (req, res) => {
 //             const id = req.params.id;
@@ -270,7 +263,6 @@ loaders.load({mongo_uri: MONGO_URL, port: PORT})
 //             const result = await orderCollection.updateOne(query, updateDoc);
 //             res.send(result);
 //         })
-
 
 //         // Place an order
 
@@ -291,7 +283,6 @@ loaders.load({mongo_uri: MONGO_URL, port: PORT})
 //                 res.send(result);
 //             }
 //         })
-
 
 //         // Get orders by email
 
