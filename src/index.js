@@ -1,5 +1,4 @@
 const express = require("express");
-const jwt = require("jsonwebtoken");
 // const { options } = require('nodemon/lib/config');
 const loaders = require("./loaders");
 require("dotenv").config();
