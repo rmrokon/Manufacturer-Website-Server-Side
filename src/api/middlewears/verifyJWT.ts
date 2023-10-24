@@ -23,4 +23,4 @@ const verifyJWT = (req: Request & {decoded?: DecodedToken}, res: Response, next:
     });
 };
 
-module.exports = verifyJWT;
+module.exports = {default: verifyJWT};

@@ -1,6 +1,7 @@
+const { Server } = require("http");
 const { closeDbConnection } = require("../loaders/mongoose")
 
-function graceFullyShutdown(signal, server){
+function graceFullyShutdown(signal: string, server: typeof Server){
     return process.on(signal, ()=>{
         closeDbConnection();
         console.log("✔ Closed database connection.");
