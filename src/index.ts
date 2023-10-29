@@ -1,7 +1,5 @@
-const express = require("express");
-const jwt = require("jsonwebtoken");
-// const { options } = require('nodemon/lib/config');
-const loaders = require("./loaders");
+import express from "express";
+import loaders from "./loaders";
 require("dotenv").config();
 
 const { CLIENT_SECRET, PORT, JWT_SECRET, MONGO_URL, PROTOCOL, HOST, NODE_ENV } =
@@ -24,7 +22,7 @@ if (
 
 
 // Connect with DB
-loaders.load({ mongo_uri: MONGO_URL, port: PORT }).then(() => {
+loaders.load({ mongo_uri: MONGO_URL, port: +PORT }).then(() => {
   console.log(
     `🚀 The server is running on ${PROTOCOL}://${HOST}:${PORT} on ${NODE_ENV} mode.`
   );
