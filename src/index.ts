@@ -1,7 +1,5 @@
-const express = require("express");
-const jwt = require("jsonwebtoken");
-// const { options } = require('nodemon/lib/config');
-const loaders = require("./loaders");
+import express from "express";
+import loaders from "./loaders";
 require("dotenv").config();
 
 const { CLIENT_SECRET, PORT, JWT_SECRET, MONGO_URL, PROTOCOL, HOST, NODE_ENV } =
@@ -22,24 +20,9 @@ if (
 }
 // const stripe = require('stripe')(CLIENT_SECRET);
 
-// Verify JWT
-const verifyJWT = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader.split(" ")[1];
-  if (!authHeader) {
-    res.status(401).send({ message: "Unauthorized access" });
-  }
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(403).send({ message: "Forbidden Access" });
-    }
-    req.decoded = decoded;
-    next();
-  });
-};
 
 // Connect with DB
-loaders.load({ mongo_uri: MONGO_URL, port: PORT }).then(() => {
+loaders.load({ mongo_uri: MONGO_URL, port: +PORT }).then(() => {
   console.log(
     `🚀 The server is running on ${PROTOCOL}://${HOST}:${PORT} on ${NODE_ENV} mode.`
   );

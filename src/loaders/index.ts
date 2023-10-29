@@ -1,10 +1,10 @@
-const graceFullyShutdown = require("../helpers/gracefullyShutdown");
-const createServer = require("./express");
-const { connectDatabase } = require("./mongoose");
+import graceFullyShutdown from "../helpers/gracefullyShutdown";
+import createServer from "./express";
+import { connectDatabase } from "./mongoose";
 
-module.exports = (function Loaders() {
+export = (function Loaders() {
   return {
-    async load(config) {
+    async load(config: {mongo_uri: string, port:number}) {
       return Promise.all([
         await loadDatabase(config?.mongo_uri),
         await loadExpress(config?.port),
@@ -13,7 +13,7 @@ module.exports = (function Loaders() {
   };
 })();
 
-async function loadDatabase(uri) {
+async function loadDatabase(uri: string) {
   try {
     const mongooseConnection = await connectDatabase(uri);
     console.log("📦 Database connected");
@@ -23,13 +23,13 @@ async function loadDatabase(uri) {
   }
 }
 
-async function loadExpress(port) {
+async function loadExpress(port: number) {
   try {
     const server = await createServer();
     console.log("📦 ExpressJS Loaded...");
     const serverResponse = server.listen(port);
     const SIGNALS = ["SIGINT", "SIGTERM"];
-    SIGNALS.forEach((signal) => graceFullyShutdown(signal, server));
+    SIGNALS.forEach((signal) => graceFullyShutdown(signal, serverResponse));
 
     return serverResponse;
   } catch (error) {
