@@ -1,5 +1,5 @@
-const express = require("express");
-const cors = require("cors");
+import express from "express";
+import cors from "cors";
 
 async function createServer(){
     const app = express();
@@ -24,4 +24,4 @@ async function createServer(){
     return app;
 }
 
-module.exports = createServer;
+export default createServer;

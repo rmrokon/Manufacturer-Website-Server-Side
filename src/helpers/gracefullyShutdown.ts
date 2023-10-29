@@ -1,7 +1,7 @@
-const { Server } = require("http");
-const { closeDbConnection } = require("../loaders/mongoose")
+import { closeDbConnection } from "../loaders/mongoose";
+import {Server} from 'http'
 
-function graceFullyShutdown(signal: string, server: typeof Server){
+function graceFullyShutdown(signal: string, server: Server){
     return process.on(signal, ()=>{
         closeDbConnection();
         console.log("✔ Closed database connection.");
@@ -11,4 +11,4 @@ function graceFullyShutdown(signal: string, server: typeof Server){
     })
 }
 
-module.exports = graceFullyShutdown;
+export default graceFullyShutdown;
