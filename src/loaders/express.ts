@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import Routes from "../api";
 
 async function createServer(){
     const app = express();
@@ -16,6 +17,8 @@ async function createServer(){
         origin: true,
         credentials: true,
     }));
+
+    app.use("/v1", Routes());
     
     app.get('/', (req, res) => {
         res.send("Smart Drilling server is running")
