@@ -13,29 +13,29 @@ services:
       - NODE_ENV="dev"
       - JWT_SECRET="my-super-secret"
       - CLIENT_SECRET="this-is-client-secret"
-      - MONGO_URL=mongodb://mongo:27017/manufacturer_website
+      - MONGO_URL=mongodb+srv://smart-drilling-db:DlycYm8Mx9hwGlyZ@cluster0.cui7v.mongodb.net/?retryWrites=true&w=majority
     ports:
       - 8000:8000
     volumes:
       - ./src:/app/src
-    depends_on:
-      mongo:
-        condition: service_started
+    # depends_on:
+    #   mongo:
+    #     condition: service_started
     restart: on-failure
     networks:
       - manufac
     stdin_open: true
       
-  mongo:
-    image: mongo:latest
-    container_name: mongo
-    ports:
-      - '27017:27017'
-    volumes:
-      - mongo:/data/db
-    restart: always
-    networks:
-      - manufac
+  # mongo:
+  #   image: mongo:latest
+  #   container_name: mongo
+  #   ports:
+  #     - '27017:27017'
+  #   volumes:
+  #     - mongo:/data/db
+  #   restart: always
+  #   networks:
+  #     - manufac
 
   
 

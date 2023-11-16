@@ -1,4 +1,3 @@
-import express from "express";
 import loaders from "./loaders";
 require("dotenv").config();
 

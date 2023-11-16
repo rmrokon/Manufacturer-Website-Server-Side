@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const {MONGO_URL} = process.env;
 async function connectDatabase(uri: string){
-    const dbConnection = await mongoose.connect(uri || MONGO_URL!);
+    const dbConnection = await mongoose.connect(uri || MONGO_URL!, { dbName: "smart-drilling" });
     return dbConnection;
 }
 
