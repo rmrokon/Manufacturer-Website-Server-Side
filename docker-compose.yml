@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  product:
+    build:
+      context: ./products
+      dockerfile: Dockerfile
+    container_name: product
+    environment:
+      - PROTOCOL=http
+      - HOST=localhost
+      - PORT=8000
+      - NODE_ENV="dev"
+      - JWT_SECRET="my-super-secret"
+      - CLIENT_SECRET="this-is-client-secret"
+      - MONGO_URL=mongodb+srv://smart-drilling-db:DlycYm8Mx9hwGlyZ@cluster0.cui7v.mongodb.net/?retryWrites=true&w=majority
+    ports:
+      - 8001:8000
+    volumes:
+      - ./products/src:/app/src
+    # depends_on:
+    #   mongo:
+    #     condition: service_started
+    restart: on-failure
+    # networks:
+    #   - manufac
+    stdin_open: true
+
+  user:
+    build:
+      context: ./users
+      dockerfile: Dockerfile
+    container_name: user
+    environment:
+      - PROTOCOL=http
+      - HOST=localhost
+      - PORT=8000
+      - NODE_ENV="dev"
+      - JWT_SECRET="my-super-secret"
+      - CLIENT_SECRET="this-is-client-secret"
+      - MONGO_URL=mongodb+srv://smart-drilling-db:DlycYm8Mx9hwGlyZ@cluster0.cui7v.mongodb.net/?retryWrites=true&w=majority
+    ports:
+      - 8002:8000
+    volumes:
+      - ./users/src:/app/src
+    # depends_on:
+    #   mongo:
+    #     condition: service_started
+    restart: on-failure
+    # networks:
+    #   - manufac
+    stdin_open: true
+
+  order:
+    build:
+      context: ./orders
+      dockerfile: Dockerfile
+    container_name: order
+    environment:
+      - PROTOCOL=http
+      - HOST=localhost
+      - PORT=8000
+      - NODE_ENV="dev"
+      - JWT_SECRET="my-super-secret"
+      - CLIENT_SECRET="this-is-client-secret"
+      - MONGO_URL=mongodb+srv://smart-drilling-db:DlycYm8Mx9hwGlyZ@cluster0.cui7v.mongodb.net/?retryWrites=true&w=majority
+    ports:
+      - 8003:8000
+    volumes:
+      - ./orders/src:/app/src
+    # depends_on:
+    #   mongo:
+    #     condition: service_started
+    restart: on-failure
+    # networks:
+    #   - manufac
+    stdin_open: true
+      
+  # mongo:
+  #   image: mongo:latest
+  #   container_name: mongo
+  #   ports:
+  #     - '27017:27017'
+  #   volumes:
+  #     - mongo:/data/db
+  #   restart: always
+  #   networks:
+  #     - manufac
+
+  
+
+volumes:
+  # mongo:
+  #   driver: local
+  db_data:
+  fa_config:
+  search_data:
+  my-bnb-dbs-1:
+
+networks:
+  manufac:
+    driver: bridge
